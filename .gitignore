@@ -1,6 +1,8 @@
 .classpath
 .project
 **/data/train/*.jpg
+**/data/train/*.json
 **/data/valid/*.jpg
+**/data/valid/*.json
 .DS_Store
 **/__pycache__/*
