@@ -1,0 +1,6 @@
+.classpath
+.project
+#**/data/train/*.jpg
+#**/data/valid/*.jpg
+.DS_Store
+**/__pycache__/*
