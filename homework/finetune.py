@@ -22,7 +22,6 @@ def load(model_name: str = "vlm_model") -> BaseVLM:
     from peft import PeftModel
 
     model_path = Path(__file__).parent / model_name
-    print(f"Loading model from {model_path}")
 
     vlm = BaseVLM()
     vlm.model = PeftModel.from_pretrained(vlm.model, model_path).to(vlm.device)
@@ -111,18 +110,15 @@ class VQADatasetForTraining(Dataset):
 def train(
     data_dir: Path | None = None,
     train_dataset_name: str = "train",
-    output_dir: str = "homework/vlm_model",
-    num_train_epochs: int = 0.1,  # use only 0.05 epoch for training
-    per_device_train_batch_size: int = 3,
-    gradient_accumulation_steps: int = 6,
+    output_dir: str = "vlm_sft",
+    num_train_epochs: int = 0.05,  # use only 0.05 epoch for training
+    per_device_train_batch_size: int = 8,
+    gradient_accumulation_steps: int = 4,
     learning_rate: float = 5e-4,
     lora_r: int = 8,
     lora_alpha: int = 32,
     lora_dropout: float = 0.0,
     num_workers: int = 16,
-    fp16: bool = True,
-    bf16: bool = False,
-
 ):
     """
     Fine-tune a VLM model using LoRA.
@@ -193,7 +189,7 @@ def train(
         logging_steps=1,
         save_strategy="steps",
         save_steps=50,
-        save_total_limit=35,
+        save_total_limit=2,
         label_names=["labels"],
         dataloader_num_workers=num_workers,
     )
@@ -207,7 +203,7 @@ def train(
     )
 
     # Train the model
-    trainer.train(resume_from_checkpoint=True)
+    trainer.train()
 
     # Save the model
     trainer.save_model(output_dir)
@@ -260,19 +256,10 @@ def demo_train():
 def test_model(ckpt_path: str, val_dataset: str = "valid_grader"):
     testset = VQADataset(val_dataset)
 
-    # load the model using all checkpoint files which are inside the ckpt_path folder in the multiple of 50
-    for i in range(50, 1000, 50):
-        ckpt_path_x = Path(ckpt_path) / f"checkpoint-{i}"
-        #ckpt_path_y = "homework/"+Path(ckpt_path) / f"checkpoint-{i}"
-        print(f"Loading model from {ckpt_path_x}")
-        #if not ckpt_path_y.exists():
-        #    continue
-        
+    llm = load(ckpt_path)
 
-        llm = load(ckpt_path_x)
-
-        benchmark_result = benchmark(llm, testset, 128)
-        print(benchmark_result.accuracy)
+    benchmark_result = benchmark(llm, testset, 128)
+    print(benchmark_result.accuracy)
 
 
 if __name__ == "__main__":

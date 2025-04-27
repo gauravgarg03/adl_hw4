@@ -165,10 +165,10 @@ def benchmark(model, dataset: VQADataset, max_samples: int = None) -> VQABenchma
         batch_responses = model.answer(batch_image_paths, batch_questions)
         responses.extend(batch_responses)
         gt_dataset.extend([dataset[i] for i in batch_indices])
-        #print(f"\tProcessed {i + batch_size} samples")
-        #print(f"\tQuestions: {batch_questions}")
-        #print(f"\tResponses: {batch_responses}")
-        #print(f"\tAnswers: {answers[i : i + batch_size]}")
+        print(f"\tProcessed {i + batch_size} samples")
+        print(f"\tQuestions: {batch_questions}")
+        print(f"\tResponses: {batch_responses}")
+        print(f"\tAnswers: {answers[i : i + batch_size]}")
 
     return VQABenchmarkResult.from_answers(responses, gt_dataset, max_samples)
 
