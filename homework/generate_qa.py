@@ -414,7 +414,7 @@ def build_full_dataset(split: str = "train", view_indices: list[int] = [0, 1, 2]
     import os
     dataset = []
 
-    info_dir = Path(f"../data/{split}")
+    info_dir = Path(f"/content/adl_hw4/data/{split}")
     out_dir = info_dir
     out_file = out_dir / "expanded_qa_pairs.json"
 

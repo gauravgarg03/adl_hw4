@@ -110,10 +110,10 @@ class VQADatasetForTraining(Dataset):
 def train(
     data_dir: Path | None = None,
     train_dataset_name: str = "train",
-    output_dir: str = "vlm_sft",
-    num_train_epochs: int = 0.05,  # use only 0.05 epoch for training
+    output_dir: str = "/content/adl_hw4/homework/vlm_model",
+    num_train_epochs: int = 0.1,  # use only 0.05 epoch for training
     per_device_train_batch_size: int = 8,
-    gradient_accumulation_steps: int = 4,
+    gradient_accumulation_steps: int = 8,
     learning_rate: float = 5e-4,
     lora_r: int = 8,
     lora_alpha: int = 32,
@@ -188,8 +188,8 @@ def train(
         bf16=True,
         logging_steps=1,
         save_strategy="steps",
-        save_steps=50,
-        save_total_limit=2,
+        save_steps=5,
+        save_total_limit=1000,
         label_names=["labels"],
         dataloader_num_workers=num_workers,
     )
@@ -256,6 +256,18 @@ def demo_train():
 def test_model(ckpt_path: str, val_dataset: str = "valid_grader"):
     testset = VQADataset(val_dataset)
 
+    for i in range(140, 265, 5):
+        ckpt_path_x = Path(ckpt_path) / f"checkpoint-{i}"
+        #ckpt_path_y = "homework/"+Path(ckpt_path) / f"checkpoint-{i}"
+        print(f"Loading model from {ckpt_path_x}")
+        #if not ckpt_path_y.exists():
+        #    continue
+        
+
+        llm = load(ckpt_path_x)
+
+        benchmark_result = benchmark(llm, testset, 128)
+        print(benchmark_result.accuracy)
     llm = load(ckpt_path)
 
     benchmark_result = benchmark(llm, testset, 128)
